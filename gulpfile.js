@@ -4,6 +4,7 @@ var gulp = require('gulp');
 var gutil = require('gulp-util');
 var del = require('del');
 var jshint = require('gulp-jshint');
+var uglify = require('gulp-uglify')
 
 // Add your require statements and gulp tasks here
 
@@ -18,6 +19,13 @@ gulp.task('lint', function () {
     .pipe(jshint())
     .pipe(jshint.reporter('default'));
 })
+
+/*// Minify
+gulp.task('min', function () {
+  return gulp.src('./js/index.js')
+    .pipe(uglify())
+    .pipe(gulp.dest('./js/bundle.js'))
+})*/
 
 
 // Browserify
