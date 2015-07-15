@@ -4,6 +4,7 @@ var gulp = require('gulp');
 var gutil = require('gulp-util');
 var del = require('del');
 var jshint = require('gulp-jshint');
+var stylish = ('jshint-stylish')
 var uglify = require('gulp-uglify')
 
 // Add your require statements and gulp tasks here
@@ -13,15 +14,14 @@ gulp.task('clean', function (cb) {
   del('js/bundle.js', cb)
 })
 
-// Lint
-gulp.task('lint', function () {
-    return gulp.src('./js/*.js')
+gulp.task('lint', function() {
+  return gulp.src('./js/index.js')
     .pipe(jshint())
-    .pipe(jshint.reporter('default'));
-})
+    .pipe(jshint.reporter('jshint-stylish'));
+});
 
-/*// Minify
-gulp.task('min', function () {
+// Minify (Still, very much needs to be modified)
+/*gulp.task('min', function () {
   return gulp.src('./js/index.js')
     .pipe(uglify())
     .pipe(gulp.dest('./js/bundle.js'))
