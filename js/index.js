@@ -20,52 +20,60 @@ $(function () {
 
 	function getUserTweets(users) {
 		users.forEach(function (user) {
-			$.get(baseUrl + '/users/' + user.id + '/tweets')
-			.done(function (userTweets) {
-				userTweets.forEach(function (tweet) {
-					var userData = {
-						handle: user.handle,
-						img: user.img
-					}
-					var message = tweet.message
-					var id = tweet.id
+			(function (currentUser) {
 
-		 			var html = renderThread(userData, message, id)
+				$.get(baseUrl + '/users/' + currentUser.id + '/tweets')
+					.done(function (userTweets) {
+						userTweets.forEach(function (tweet) {
+							var userData = {
+								handle: currentUser.handle,
+								img: currentUser.img
+							}
+							var message = tweet.message
+							var id = tweet.id
 
-		 			$('#tweets').append(html)
+				 			var html = renderThread(userData, message, id)
 
-				})
-			})
+				 			$('#tweets').append(html)
+
+							getUserReplies(currentUser.id)
+
+						})
+					})
+			}(user))
 		})
 	}
 
-	function getUserReplies(users) {
-		users.forEach(function (user) {
+	function getUserReplies(userId) {
+		// users.forEach(function (user) {
 			// console.log(user)
-			$.get(baseUrl + '/users/' + user.id + '/replies/')
+			$.get(baseUrl + '/users/' + userId + '/replies/')
 				.done(function (replies) {
+					console.log(replies)
 					replies.forEach(function (reply) {
 
-						var userData = {
-								handle: user.handle,
-								img: user.img
-							}
-						var message = reply.message
-						var id = reply.tweetId
-						var search = $('#tweets').find('#tweet-' + id).siblings('.replies')
+						// var userData = {
+						// 		handle: user.handle,
+						// 		img: user.img
+						// 	}
+						// var message = reply.message
+						// var id = reply.tweetId
+						// var search = $('#tweets').find('#tweet-' + id).siblings('.replies')
 
-						// search.append(renderThread(reply))
-						var html = renderTweet(userData, message, id)
+						// // search.append(renderThread(reply))
+						// var html = renderTweet(userData, message, id)
 
-						search.append(html)
+						// search.append(html)
+
+						console.log(reply)
 
 					})
 				})
-		})
+		// })
 	}
 
-	getUsers().done(getUserTweets)
-	getUsers().done(getUserReplies)
+	getUsers()
+		.done(getUserTweets)
 
 
 	function renderTweet(user, message, id) {
