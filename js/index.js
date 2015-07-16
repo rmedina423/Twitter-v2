@@ -24,52 +24,69 @@ $(function () {
 
 				$.get(baseUrl + '/users/' + currentUser.id + '/tweets')
 					.done(function (userTweets) {
-						userTweets.forEach(function (tweet) {
-							var userData = {
-								handle: currentUser.handle,
-								img: currentUser.img
-							}
-							var message = tweet.message
-							var id = tweet.id
+						// userTweets.forEach(function (tweet) {
+						// 	var userData = {
+						// 		handle: currentUser.handle,
+						// 		img: currentUser.img
+						// 	}
+						// 	var message = tweet.message
+						// 	var id = tweet.id
 
-				 			var html = renderThread(userData, message, id)
+				 	// 		var html = renderThread(userData, message, id)
 
-				 			$('#tweets').append(html)
+				 	// 		$('#tweets').append(html)
 
-							getUserReplies(currentUser.id)
+						// 	getTweetReplies(tweet.id)
 
-						})
+
+						// })
 					})
 			}(user))
 		})
 	}
 
-	function getUserReplies(userId) {
-		// users.forEach(function (user) {
-			// console.log(user)
-			$.get(baseUrl + '/users/' + userId + '/replies/')
+	function userTweets(userTweets) {
+		userTweets.forEach(function (tweet) {
+			var userData = {
+				handle: currentUser.handle,
+				img: currentUser.img
+			}
+			var message = tweet.message
+			var html = renderThread(userData, message, id)
+
+			$('#tweet').append(html)
+
+			getTweetReplies(tweet.id)
+
+		})
+	}
+
+	// REPLIES
+
+	function getTweetReplies(tweetId) {
+			$.get(baseUrl + '/tweets/' + tweetId + '/replies/')
 				.done(function (replies) {
-					console.log(replies)
-					replies.forEach(function (reply) {
-
-						// var userData = {
-						// 		handle: user.handle,
-						// 		img: user.img
-						// 	}
-						// var message = reply.message
-						// var id = reply.tweetId
-						// var search = $('#tweets').find('#tweet-' + id).siblings('.replies')
-
-						// // search.append(renderThread(reply))
-						// var html = renderTweet(userData, message, id)
-
-						// search.append(html)
-
-						console.log(reply)
-
-					})
+					tweetReplies(replies)
 				})
-		// })
+	}
+
+
+	function tweetReplies(replies) {
+		replies.forEach(function (reply) {
+
+			// var userData = {
+			// 			handle: user.handle,
+			// 			img: user.img
+			// 		}
+				var message = reply.message
+				var id = reply.tweetId
+				var search = $('#tweets').find('#tweet-' + id).siblings('.replies')
+
+				var html = renderTweet(message, id)
+
+				search.append(html)
+
+		})
 	}
 
 	getUsers()
