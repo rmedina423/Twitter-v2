@@ -1,6 +1,13 @@
 var $ = require('jquery');
 var template = require('./template.js')
 
+var user = {
+	id: 4,
+    img: "images/ryan.jpg",
+    handle: "@ryanmedina",
+    realName: "Ryan M. Medina",
+}
+
 $(function () {
 
 	var baseUrl = 'http://localhost:3000'
@@ -10,6 +17,7 @@ $(function () {
   	}
 
 	function getUserTweets(users) {
+		console.log(users);
 		users.forEach(function (user) {
 			(function (currentUser) {
 				$.get(baseUrl + '/users/' + currentUser.id + '/tweets')
@@ -100,4 +108,71 @@ $(function () {
 	$('#tweets').on('click','.tweet', function () {
 		$(this).parent().toggleClass('expand')
 	})
+
+	$('#main').on('click', 'button', function (event) {
+		event.preventDefault()
+
+		var btnClicked = $(this)
+
+		var replyTweetLoc = btnClicked.parents('.replies')
+
+		var message = $(this).parents('.compose').find('textarea').val()
+
+
+		if ($(this).parents('.replies').length) {
+			var replyId = $('.replies').find($('.tweet')).length
+			replyId = ++replyId
+			var output = renderTweet(user, message, replyId)
+			var tweet = btnClicked.parents('.thread').find('.tweet:first-child').attr('id')
+			tweetId = tweet.slice(6)
+
+			replyTweetLoc.append(output)
+
+			$.post('http://localhost:3000/replies', {
+				id: replyId,
+    			userId: user.id,
+			    tweetId: tweetId,
+			    message: message
+			})
+
+		} else {
+			var tweetId = $('.thread').length
+			tweetId = ++tweetId
+			var output = renderThread(user, message, tweetId)
+
+			$('#tweets').append(output)
+
+			$.post('http://localhost:3000/tweets', {
+				id: tweetId,
+				userId: user.id,
+				message: message,
+			})
+		}
+
+		$(this).parents('.compose').removeClass('expand')
+
+		$('textarea').val('')
+
+		$('.count').html('140')
+		
+	})
+
+  $.ajax({
+
+  	url: 'http://localhost:3000/users/',
+  	type: 'POST',
+  	data: {
+  		id: 4,
+    	img: "images/ryan.jpg",
+    	handle: "@ryanmedina",
+    	realName: "Ryan M. Medina",
+  	}
+
+	})
+
+	// $.ajax({
+	// 	url: 'http://localhost:3000/tweets/1',
+	// 	type: 'DELETE'
+	// })
+
 });
