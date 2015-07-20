@@ -4,8 +4,6 @@ var gulp = require('gulp');
 var gutil = require('gulp-util');
 var del = require('del');
 var jshint = require('gulp-jshint');
-var stylish = ('jshint-stylish')
-var uglify = require('gulp-uglify')
 
 // Add your require statements and gulp tasks here
 
@@ -14,19 +12,13 @@ gulp.task('clean', function (cb) {
   del('js/bundle.js', cb)
 })
 
+
+/* jshint asi: true, */
 gulp.task('lint', function() {
   return gulp.src('./js/index.js')
     .pipe(jshint())
     .pipe(jshint.reporter('jshint-stylish'));
 });
-
-// Minify (Still, very much needs to be modified)
-/*gulp.task('min', function () {
-  return gulp.src('./js/index.js')
-    .pipe(uglify())
-    .pipe(gulp.dest('./js/bundle.js'))
-})*/
-
 
 // Browserify
 var source = require('vinyl-source-stream');
@@ -74,8 +66,10 @@ gulp.task('serve:web', serve({
 
 gulp.task('serve', ['serve:api', 'serve:web'])
 
-// Default
-gulp.task('default', ['lint', 'serve'], function () {
+// Watch
+gulp.task('watch', function () {
   return gulp.watch(['./js/index.js'], ['build'])
-  
 })
+
+// Default
+gulp.task('default', ['lint', 'serve', 'watch'])

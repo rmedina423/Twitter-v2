@@ -1,3 +1,6 @@
+/* jshint node: true, asi: true */
+'use strict'
+
 var $ = require('jquery');
 var template = require('./template.js')
 
@@ -16,7 +19,6 @@ $(function () {
 				users.forEach(function (userx) {
 					if (userx.id == $('#currentUser').val()) {
 						user = userx
-						console.log(user)
 					}
 				})
 			})
@@ -24,9 +26,7 @@ $(function () {
 
 	var baseUrl = 'http://localhost:3000'
 
-	function getUsers() {
-    	return $.get(baseUrl + '/users')
-  	}
+  	var getUsers = $.get(baseUrl + '/users/')
 
 	function getUserTweets(users) {
 		users.forEach(function (user) {
@@ -68,6 +68,13 @@ $(function () {
 
 	function getReplies(replies, tweet) {
 		replies.forEach(function (reply) {
+
+			// getUsers
+			// 	.done(function (user) {
+			// 		console.log(user)
+			// 	})
+
+
 			$.get(baseUrl + '/users/' + reply.userId)
 				.done(function (user) {
 					var userData = {
@@ -83,17 +90,13 @@ $(function () {
 
 					var html = renderTweet(userData, message, id)
 
-					// if (tweet.id === id) {
-					// 	search.append(html)
-					// }
-
 					search.append(html)
 				})
 
 		})
 	}
 
-	getUsers()
+	getUsers
 		.done(getUserTweets)
 
 
@@ -138,30 +141,26 @@ $(function () {
 
 
 		if ($(this).parents('.replies').length) {
-			var replyId = $('.replies').find($('.tweet')).length
-			replyId = ++replyId
-			var output = renderTweet(user, message, replyId)
+
+			var output = renderTweet(user, message)
 			var tweet = btnClicked.parents('.thread').find('.tweet:first-child').attr('id')
-			tweetId = tweet.slice(6)
+
+			var tweetId = tweet.slice(6)
 
 			replyTweetLoc.append(output)
 
 			$.post('http://localhost:3000/replies', {
-				id: replyId,
     			userId: user.id,
 			    tweetId: tweetId,
 			    message: message
 			})
 
 		} else {
-			var tweetId = $('.thread').length
-			tweetId = ++tweetId
-			var output = renderThread(user, message, tweetId)
+			var output = renderThread(user, message)
 
 			$('#tweets').append(output)
 
 			$.post('http://localhost:3000/tweets', {
-				id: tweetId,
 				userId: user.id,
 				message: message,
 			})
@@ -184,18 +183,5 @@ $(function () {
 
 			counter.text(max-value.length)
 		})
-
-  $.ajax({
-
-  	url: 'http://localhost:3000/users/',
-  	type: 'POST',
-  	data: {
-  		id: 4,
-    	img: "images/ryan.jpg",
-    	handle: "@ryanmedina",
-    	realName: "Ryan M. Medina",
-  	}
-
-	})
 
 });
