@@ -10,6 +10,18 @@ var user = {
 
 $(function () {
 
+    $('#currentUser').on('change', function () {
+		$.get('http://localhost:3000/users')
+			.done(function (users) {
+				users.forEach(function (userx) {
+					if (userx.id == $('#currentUser').val()) {
+						user = userx
+						console.log(user)
+					}
+				})
+			})
+    })
+
 	var baseUrl = 'http://localhost:3000'
 
 	function getUsers() {
@@ -17,18 +29,17 @@ $(function () {
   	}
 
 	function getUserTweets(users) {
-		console.log(users);
 		users.forEach(function (user) {
 			(function (currentUser) {
 				$.get(baseUrl + '/users/' + currentUser.id + '/tweets')
 					.done(function (userTweets) {
-						Tweets(userTweets, currentUser)
+						getTweets(userTweets, currentUser)
 					})
 			}(user))
 		})
 	}
 
-	function Tweets(userTweets, currentUser) {
+	function getTweets(userTweets, currentUser) {
 		userTweets.forEach(function (tweet) {
 			var userData = {
 				handle: currentUser.handle,
@@ -42,20 +53,20 @@ $(function () {
 
 			$('#tweets').append(html)
 
-			getTweetReplies(tweet.id)
+			getTweetReplies(tweet)
 
 
 		})
 	}
 
-	function getTweetReplies(tweetId) {
-			$.get(baseUrl + '/tweets/' + tweetId + '/replies/')
+	function getTweetReplies(tweet) {
+			$.get(baseUrl + '/tweets/' + tweet.id + '/replies/')
 				.done(function (replies) {
-					tweetReplies(replies)
+					getReplies(replies, tweet)
 				})
 	}
 
-	function tweetReplies(replies) {
+	function getReplies(replies, tweet) {
 		replies.forEach(function (reply) {
 			$.get(baseUrl + '/users/' + reply.userId)
 				.done(function (user) {
@@ -65,10 +76,17 @@ $(function () {
 						}
 					
 					var message = reply.message
+
 					var id = reply.tweetId
+
 					var search = $('#tweets').find('#tweet-' + id).siblings('.replies')
 
 					var html = renderTweet(userData, message, id)
+
+					// if (tweet.id === id) {
+					// 	search.append(html)
+					// }
+
 					search.append(html)
 				})
 
@@ -157,6 +175,16 @@ $(function () {
 		
 	})
 
+	$('#main').on('keyup', 'textarea', function () {
+			var counter = $(this).parent().find('.count')
+
+			var max = 140
+
+			var value = $(this).val()
+
+			counter.text(max-value.length)
+		})
+
   $.ajax({
 
   	url: 'http://localhost:3000/users/',
@@ -169,10 +197,5 @@ $(function () {
   	}
 
 	})
-
-	// $.ajax({
-	// 	url: 'http://localhost:3000/tweets/1',
-	// 	type: 'DELETE'
-	// })
 
 });
