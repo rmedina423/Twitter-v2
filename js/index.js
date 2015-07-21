@@ -6,14 +6,14 @@ var template = require('./template.js')
 
 var user = {
 	id: 4,
-    img: "images/ryan.jpg",
-    handle: "@ryanmedina",
-    realName: "Ryan M. Medina",
+	img: "images/ryan.jpg",
+	handle: "@ryanmedina",
+	realName: "Ryan M. Medina",
 }
 
 $(function () {
 
-    $('#currentUser').on('change', function () {
+	$('#currentUser').on('change', function () {
 		$.get('http://localhost:3000/users')
 			.done(function (users) {
 				users.forEach(function (userx) {
@@ -22,11 +22,11 @@ $(function () {
 					}
 				})
 			})
-    })
+	})
 
 	var baseUrl = 'http://localhost:3000'
 
-  	var getUsers = $.get(baseUrl + '/users/')
+	var getUsers = $.get(baseUrl + '/users/')
 
 	function getUserTweets(users) {
 		users.forEach(function (user) {
@@ -53,30 +53,38 @@ $(function () {
 
 			$('#tweets').append(html)
 
-			getTweetReplies(tweet)
-
-
 		})
 	}
 
-	function getTweetReplies(tweet) {
-			$.get(baseUrl + '/tweets/' + tweet.id + '/replies/')
+	function getUserReplies(users) {
+		users.forEach(function (user) {
+			$.get(baseUrl + '/users/' + user.id + '/replies/')
 				.done(function (replies) {
-					getReplies(replies, tweet)
+					replies.forEach(function (reply) {
+							console.log(reply.userId, user.id)
+							if (user.id === reply.userId) {			
+								var userData = {
+									handle: user.handle,
+									img: user.img
+								}
+								
+								var message = reply.message
+
+								var id = reply.tweetId
+
+								var search = $('#tweets').find('#tweet-' + id).siblings('.replies')
+
+								var html = renderTweet(userData, message, id)
+
+								search.append(html)
+							}
+
+					})
 				})
+		})
 	}
 
 	function getReplies(replies, tweet) {
-		replies.forEach(function (reply) {
-
-			// getUsers
-			// 	.done(function (user) {
-			// 		console.log(user)
-			// 	})
-
-
-			$.get(baseUrl + '/users/' + reply.userId)
-				.done(function (user) {
 					var userData = {
 							handle: user.handle,
 							img: user.img
@@ -91,13 +99,11 @@ $(function () {
 					var html = renderTweet(userData, message, id)
 
 					search.append(html)
-				})
-
-		})
 	}
 
 	getUsers
 		.done(getUserTweets)
+		.done(getUserReplies)
 
 
 	function renderTweet(user, message, id) {
@@ -150,9 +156,9 @@ $(function () {
 			replyTweetLoc.append(output)
 
 			$.post('http://localhost:3000/replies', {
-    			userId: user.id,
-			    tweetId: tweetId,
-			    message: message
+				userId: user.id,
+				tweetId: tweetId,
+				message: message
 			})
 
 		} else {
