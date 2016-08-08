@@ -61,7 +61,6 @@ $(function () {
 			$.get(baseUrl + '/users/' + user.id + '/replies/')
 				.done(function (replies) {
 					replies.forEach(function (reply) {
-							console.log(reply.userId, user.id)
 							if (user.id === reply.userId) {			
 								var userData = {
 									handle: user.handle,
