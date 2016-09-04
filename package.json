@@ -25,5 +25,10 @@
     "handlebars": "^3.0.3",
     "jquery": "^2.1.4",
     "lodash": "^3.9.3"
+  },
+  "jshintConfig": {
+    "node": true,
+    "browser": true,
+    "validthis": true
   }
 }
