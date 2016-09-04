@@ -1,13 +1,9 @@
 'use strict';
 
-var Handlebars = require('hbsfy/runtime')
-
-var tweet = require('./../templates/tweet.handlebars')
-var compose = require('./../templates/compose.handlebars')
-var thread = require('./../templates/thread.handlebars')
+var Handlebars = require('hbsfy/runtime');
 
 module.exports = {
-	tweet: tweet,
-	compose: compose,
-	thread: thread
-}
+	tweet: require('./../templates/tweet.handlebars'),
+	compose: require('./../templates/compose.handlebars'),
+	thread: require('./../templates/thread.handlebars')
+};
