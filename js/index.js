@@ -1,6 +1,4 @@
-(function () {
-	'use strict';
-}());
+'use strict';
 
 var $ = require('jquery');
 var template = require('./template.js');
@@ -17,7 +15,7 @@ var user = {
 	realName: "Ryan M. Medina",
 };
 
-$( document ).ready(function () {
+$(document).ready(function () {
 	getUsers.done(getUserTweets).done(getUserReplies);
 	attachEvents();
 });
@@ -87,6 +85,11 @@ function attachEvents() {
 	mainContainer.on('keyup', 'textarea', onKeyUpTextArea);
 }
 
+function onClickExpandTextArea() {
+	$(this).parent().addClass('expand');
+	$(this).attr('maxlength', '140');
+}
+
 function onChangeCurrentUser() {
 	$.get('http://localhost:3000/users').done(function (users) {
 		users.forEach(function (currentUser) {
@@ -97,11 +100,6 @@ function onChangeCurrentUser() {
 	});
 }
 
-function onClickExpandTextArea() {
-	$(this).parent().addClass('expand');
-	$(this).attr('maxlength', '140');
-}
-
 function onClickExpandTweet() {
 	$(this).parent().toggleClass('expand');
 }
@@ -109,29 +107,17 @@ function onClickExpandTweet() {
 function onClickSendButton(event) {
 	event.preventDefault();
 
+	var message = $(this).parents('.compose').find('textarea').val();
 	var btnClicked = $(this);
 	var replyTweetLoc = btnClicked.parents('.replies');
-	var message = $(this).parents('.compose').find('textarea').val();
+	var tweet = btnClicked.parents('.thread').find('.tweet:first-child').attr('id');
 
 	if ($(this).parents('.replies').length) {
-		var tweet = btnClicked.parents('.thread').find('.tweet:first-child').attr('id');
-		var tweetId = tweet.slice(6);
-
 		replyTweetLoc.append(renderTweet(user, message));
-
-		$.post('http://localhost:3000/replies', {
-			userId: user.id,
-			tweetId: tweetId,
-			message: message
-		});
-
+		postToReplies(message, tweet);
 	} else {
 		tweetsContainer.append(renderThread(user, message));
-
-		$.post('http://localhost:3000/tweets', {
-			userId: user.id,
-			message: message,
-		});
+		postToTweets(message);
 	}
 
 	$(this).parents('.compose').removeClass('expand');
@@ -139,10 +125,22 @@ function onClickSendButton(event) {
 	$('.count').html('140');
 }
 
+function postToReplies(message, tweet) {
+	$.post('http://localhost:3000/replies', {
+		userId: user.id,
+		tweetId: tweet.slice(6),
+		message: message
+	});
+}
+
+function postToTweets(message) {
+	$.post('http://localhost:3000/tweets', {
+		userId: user.id,
+		message: message,
+	});
+}
+
 function onKeyUpTextArea() {
 	var counter = $(this).parent().find('.count');
-	var max = 140;
-	var value = $(this).val();
-
-	counter.text(max - value.length);
+	counter.text(140 - $(this).val().length);
 }
