@@ -90,10 +90,13 @@ function onClickExpandTextArea() {
 	$(this).attr('maxlength', '140');
 }
 
-function onChangeCurrentUser() {
+function onChangeCurrentUser(event) {
+
+	var selectedUser = $(event.currentTarget).find($(':selected'));
+
 	$.get('http://localhost:3000/users').done(function (users) {
 		users.forEach(function (currentUser) {
-			if (currentUser.id == currentUser.val()) {
+			if (currentUser.id == selectedUser.attr('value')) {
 				user = currentUser;
 			}
 		});
